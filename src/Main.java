@@ -1,22 +1,33 @@
+import java.util.Map.Entry;
+
 import twitter4j.Status;
 
 public class Main {
 
-	public static void main(String[] args) {
-		String topic = "Dilma";
+	public static void main(final String[] args) {
+		final String topic = "Dilma";
 		Lumaro.init("en");
-		Result result = TweetController.getTweets(topic, 100, Lumaro.LANGUAGE, true);
-		for(Status tweet : result.tweetList) {
-			int sentiment = Lumaro.findSentiment(tweet.getRetweetedStatus().getText());
-			System.out.println(tweet.getRetweetedStatus().getText() + " : " + sentiment);
-			result.totalSentiment+=sentiment;
+		final Result result = TweetController.getTweets(topic, 10, Lumaro.LANGUAGE, true);
+		for (final Status tweet : result.tweetList) {
+			final int sentiment = Lumaro.findSentiment(tweet.getRetweetedStatus().getText());
+			// System.out.println(tweet.getRetweetedStatus().getText() + " : " + sentiment);
+			result.sumSentiment(sentiment);
+			result.totalSentiment += sentiment;
 		}
-		System.out.println("Avg: "+(float)result.totalSentiment/(float)result.tweetList.size());
+		System.out.println("Avg: " + result.totalSentiment / result.tweetList.size());
 		System.out.println("-------------------------------------------");
-		System.out.println("Oldest Tweet: "+result.oldestTweet.getText()+" at "+result.oldestTweet.getCreatedAt());
-		System.out.println("Tweeted by: "+result.oldestTweet.getUser().getScreenName());
+		System.out.println("Oldest Tweet: " + result.oldestTweet.getText() + " at " + result.oldestTweet.getCreatedAt());
+		System.out.println("Tweeted by: " + result.oldestTweet.getUser().getScreenName());
 		System.out.println("-------------------------------------------");
-		System.out.println("Most recent Tweet: "+result.oldestTweet.getText()+" at "+result.newestTweet.getCreatedAt());
-		System.out.println("Tweeted by: "+result.newestTweet.getUser().getScreenName());
+		System.out.println("Most recent Tweet: " + result.oldestTweet.getText() + " at " + result.newestTweet.getCreatedAt());
+		System.out.println("Tweeted by: " + result.newestTweet.getUser().getScreenName());
+		System.out.println("-------------------------------------------");
+		String chartData = "";
+		for (Entry<SentimentLevel, Integer> entry : result.sentimentLevel.entrySet()) {
+			chartData += "['"+entry.getKey().getCanonicalName()+"',"+entry.getValue()+"],";
+		}
+		chartData = chartData.substring(0, chartData.length()-1);
+		System.out.println("Data: "+chartData);
+		
 	}
 }

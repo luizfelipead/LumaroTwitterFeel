@@ -1,2 +1,6 @@
 *.class
 *.prefs
+*.DS_Store
+lib/stanford-corenlp-3.5.0-models.jar
+
+

@@ -7,28 +7,29 @@ import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 
 public class Lumaro {
-	
-	public  static String LANGUAGE = "en";
-	
+
+	public static String LANGUAGE = "en";
+
 	static StanfordCoreNLP pipeline;
 
-	public static void init(String lang) {
+	public static void init(final String lang) {
 		LANGUAGE = lang;
 		pipeline = new StanfordCoreNLP("tweetfeelNLP.properties");
 	}
 
-	public static int findSentiment(String tweet) {
+	public static int findSentiment(final String tweet) {
 
 		int mainSentiment = 0;
 		if (tweet != null && tweet.length() > 0) {
 			int longest = 0;
-			Annotation annotation = pipeline.process(tweet);
-			for (CoreMap sentence : annotation
+			final Annotation annotation = pipeline.process(tweet);
+			for (final CoreMap sentence : annotation
 					.get(CoreAnnotations.SentencesAnnotation.class)) {
-				Tree tree = sentence
+				final Tree tree = sentence
 						.get(SentimentCoreAnnotations.AnnotatedTree.class);
-				int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
-				String partText = sentence.toString();
+				final int sentiment = RNNCoreAnnotations
+						.getPredictedClass(tree);
+				final String partText = sentence.toString();
 				if (partText.length() > longest) {
 					mainSentiment = sentiment;
 					longest = partText.length();
