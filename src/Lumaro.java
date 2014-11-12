@@ -3,6 +3,7 @@ import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
+import edu.stanford.nlp.sentiment.SentimentUtils;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 
@@ -18,7 +19,6 @@ public class Lumaro {
 	}
 
 	public static int findSentiment(final String tweet) {
-
 		int mainSentiment = 0;
 		if (tweet != null && tweet.length() > 0) {
 			int longest = 0;
@@ -27,9 +27,9 @@ public class Lumaro {
 					.get(CoreAnnotations.SentencesAnnotation.class)) {
 				final Tree tree = sentence
 						.get(SentimentCoreAnnotations.AnnotatedTree.class);
-				final int sentiment = RNNCoreAnnotations
-						.getPredictedClass(tree);
-				final String partText = sentence.toString();
+				int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
+				String partText = sentence.toString();
+				System.out.println(partText);
 				if (partText.length() > longest) {
 					mainSentiment = sentiment;
 					longest = partText.length();

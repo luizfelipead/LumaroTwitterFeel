@@ -40,6 +40,7 @@ public class SimpleStream {
 	                String content = status.getText();
 	                
 	                System.out.println("Tweet: "+content);
+	                System.out.println("At: "+status.getCreatedAt());
 	                System.out.println("Tweeted by: "+username);
 	                System.out.println("Sentiment Level:  "+Lumaro.findSentiment(content));
             	}

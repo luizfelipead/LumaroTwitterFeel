@@ -1,7 +1,7 @@
 
 public enum SentimentLevel {
 	
-	LEVEL_0("Level 0"), LEVEL_1("Level 1"), LEVEL_2("Level 2"), LEVEL_3("Level 3");
+	LEVEL_0("Very negative"), LEVEL_1("Negative"), LEVEL_2("Neutral"), LEVEL_3("Positive"), LEVEL_4("Very Positive");
 	
 	private String canonicalName;
 	
@@ -17,8 +17,10 @@ public enum SentimentLevel {
 			level = LEVEL_1;
 		} else if ( sentiment == 2 ) {
 			level = LEVEL_2;
-		} else {
+		} else if (sentiment == 3) {
 			level = LEVEL_3;
+		} else {
+			level = LEVEL_4;
 		}
 		return level;
 	}

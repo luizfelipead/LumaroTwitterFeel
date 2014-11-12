@@ -7,9 +7,9 @@ public class Main {
 	public static void main(final String[] args) {
 		final String topic = "Dilma";
 		Lumaro.init("en");
-		final Result result = TweetController.getTweets(topic, 10, Lumaro.LANGUAGE, true);
+		final Result result = TweetController.getTweets(topic, 1, Lumaro.LANGUAGE, true);
 		for (final Status tweet : result.tweetList) {
-			final int sentiment = Lumaro.findSentiment(tweet.getRetweetedStatus().getText());
+			final int sentiment = Lumaro.findSentiment("love");
 			// System.out.println(tweet.getRetweetedStatus().getText() + " : " + sentiment);
 			result.sumSentiment(sentiment);
 			result.totalSentiment += sentiment;
@@ -19,7 +19,7 @@ public class Main {
 		System.out.println("Oldest Tweet: " + result.oldestTweet.getText() + " at " + result.oldestTweet.getCreatedAt());
 		System.out.println("Tweeted by: " + result.oldestTweet.getUser().getScreenName());
 		System.out.println("-------------------------------------------");
-		System.out.println("Most recent Tweet: " + result.oldestTweet.getText() + " at " + result.newestTweet.getCreatedAt());
+		System.out.println("Most recent Tweet: " + result.newestTweet.getText() + " at " + result.newestTweet.getCreatedAt());
 		System.out.println("Tweeted by: " + result.newestTweet.getUser().getScreenName());
 		System.out.println("-------------------------------------------");
 		String chartData = "";
