@@ -12,17 +12,17 @@ public class Result {
 	public Status mostPopularTweet;
 	public List<Status> mostRelevantTweets;
 	public Map<SentimentLevel, Integer> sentimentLevel;
-	
+
 	public Result() {
 		super();
 		sentimentLevel = new HashMap<SentimentLevel, Integer>();
-		for (SentimentLevel level : SentimentLevel.values()) {
+		for (final SentimentLevel level : SentimentLevel.values()) {
 			sentimentLevel.put(level, 0);
 		}
 	}
 
-	public void sumSentiment(int sentiment) {
-		SentimentLevel level = SentimentLevel.getByInt( sentiment );
+	public void sumSentiment(final int sentiment) {
+		final SentimentLevel level = SentimentLevel.getByInt(sentiment);
 		Integer sum = sentimentLevel.get(level);
 		sum += 1;
 		sentimentLevel.put(level, sum);
