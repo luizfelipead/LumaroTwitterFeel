@@ -4,49 +4,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import twitter4j.Status;
-
 public class Result {
-	private Status oldestTweet;
-	private Status newestTweet;
-	private Status mostPopularTweet;
-	private List<Status> tweetList;
+	private Tweet oldestTweet;
+	private Tweet newestTweet;
+	private Tweet mostPopularTweet;
+	private List<Tweet> tweetList;
 	private Map<SentimentLevel, Integer> allSentimentsLevels;
 
 	public Result() {
 		super();
-		this.tweetList = new ArrayList<Status>();
+		this.tweetList = new ArrayList<Tweet>();
 	}
 
-	public List<Status> getTweetList() {
+	public List<Tweet> getTweetList() {
 		return this.tweetList;
 	}
 
-	public void setTweetList(final List<Status> tweetList) {
+	public void setTweetList(final List<Tweet> tweetList) {
 		this.tweetList = tweetList;
 	}
 
-	public Status getOldestTweet() {
+	public Tweet getOldestTweet() {
 		return this.oldestTweet;
 	}
 
-	public void setOldestTweet(final Status oldestTweet) {
+	public void setOldestTweet(final Tweet oldestTweet) {
 		this.oldestTweet = oldestTweet;
 	}
 
-	public Status getNewestTweet() {
+	public Tweet getNewestTweet() {
 		return this.newestTweet;
 	}
 
-	public void setNewestTweet(final Status newestTweet) {
+	public void setNewestTweet(final Tweet newestTweet) {
 		this.newestTweet = newestTweet;
 	}
 
-	public Status getMostPopularTweet() {
+	public Tweet getMostPopularTweet() {
 		return this.mostPopularTweet;
 	}
 
-	public void setMostPopularTweet(final Status mostPopularTweet) {
+	public void setMostPopularTweet(final Tweet mostPopularTweet) {
 		this.mostPopularTweet = mostPopularTweet;
 	}
 

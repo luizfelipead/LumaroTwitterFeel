@@ -28,12 +28,12 @@ public class TwitterController {
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String twitter(final ModelMap model, final String topic) {
-		final Result result = this.twitterService.getTweets(topic, 5, LANGUAGE, false);
+		final Result result = this.twitterService.runTweetAnalysis(topic, 5, LANGUAGE, false);
 
-		model.addAttribute("oldestText", result.getOldestTweet().getText() + " at " + result.getOldestTweet().getCreatedAt());
-		model.addAttribute("oldestOwner", result.getOldestTweet().getUser().getScreenName());
-		model.addAttribute("newestText", result.getNewestTweet().getText() + " at " + result.getNewestTweet().getCreatedAt());
-		model.addAttribute("newestOwner", result.getNewestTweet().getUser().getScreenName());
+		model.addAttribute("oldestText", result.getOldestTweet().getText() + " at " + result.getOldestTweet().getStatus().getCreatedAt());
+		model.addAttribute("oldestOwner", result.getOldestTweet().getStatus().getUser().getScreenName());
+		model.addAttribute("newestText", result.getNewestTweet().getText() + " at " + result.getNewestTweet().getStatus().getCreatedAt());
+		model.addAttribute("newestOwner", result.getNewestTweet().getStatus().getUser().getScreenName());
 
 		String chartData = "";
 		int value = 0;

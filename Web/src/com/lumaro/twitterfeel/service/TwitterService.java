@@ -4,21 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-
 import com.lumaro.twitterfeel.model.Result;
 import com.lumaro.twitterfeel.model.SentimentLevel;
+import com.lumaro.twitterfeel.model.Tweet;
+import com.lumaro.twitterfeel.utils.TextUtils;
 
 @Service
 public class TwitterService {
@@ -28,15 +26,18 @@ public class TwitterService {
 	@Autowired
 	protected StanfordNLPService stanfordNLPService;
 
+	@Autowired
+	private TextUtils textUtils;
+
 	@PostConstruct
 	protected void postConstruct() {
 		this.twitter = new TwitterFactory().getInstance();
 	}
 
-	public Result getTweets(final String topic, final int maxTweets, final String language, final boolean addRepeated) {
+	public Result runTweetAnalysis(final String topic, final int maxTweets, final String language, final boolean addRepeated) {
 
 		final Result finalResult = new Result();
-		final List<Status> statusList = new ArrayList<Status>();
+		final List<Tweet> finalTweetList = new ArrayList<Tweet>();
 		final Map<SentimentLevel, Integer> allSentimentsLevels = new HashMap<SentimentLevel, Integer>();
 
 		try {
@@ -46,34 +47,46 @@ public class TwitterService {
 			QueryResult result;
 			do {
 				result = this.twitter.search(query);
-				finalResult.setTweetList(result.getTweets());
-				for (final Status tweet : finalResult.getTweetList()) {
-					if (tweet.getRetweetedStatus() != null) {
-						boolean alreadyExists = false;
-						if (!addRepeated) {
-							alreadyExists = checkIfAlreadyExists(statusList, tweet.getRetweetedStatus().getText());
+
+				List<Tweet> tweetList = new ArrayList<Tweet>();
+				for ( Status status : result.getTweets() ) {
+					Status retweetedStatus = status.getRetweetedStatus();
+					if( retweetedStatus != null ) {
+						tweetList.add( new Tweet( retweetedStatus ) );
+					}
+				}
+
+				for (final Tweet tweet : tweetList) {
+					boolean alreadyExists = false;
+					if (!addRepeated) {
+						alreadyExists = checkIfAlreadyExists(finalTweetList, tweet.getText());
+					}
+					if (!alreadyExists) {
+						finalTweetList.add(tweet);
+
+						Tweet oldestTweet = finalResult.getOldestTweet();
+						if ((oldestTweet == null) || oldestTweet.getStatus().getCreatedAt().after(tweet.getStatus().getCreatedAt())) {
+							finalResult.setOldestTweet(tweet);
 						}
-						if (!alreadyExists) {
-							statusList.add(tweet);
-							if ((finalResult.getOldestTweet() == null) || finalResult.getOldestTweet().getCreatedAt().after(tweet.getCreatedAt())) {
-								finalResult.setOldestTweet(tweet);
-							}
-							if ((finalResult.getNewestTweet() == null) || finalResult.getNewestTweet().getCreatedAt().before(tweet.getCreatedAt())) {
-								finalResult.setNewestTweet(tweet);
-							}
-							if ((finalResult.getMostPopularTweet() == null) || (finalResult.getMostPopularTweet().getRetweetCount() < tweet.getRetweetCount())) {
-								finalResult.setMostPopularTweet(tweet);
-							}
+
+						Tweet newestTweet = finalResult.getNewestTweet();
+						if ((newestTweet == null) || newestTweet.getStatus().getCreatedAt().before(tweet.getStatus().getCreatedAt())) {
+							finalResult.setNewestTweet(tweet);
+						}
+
+						Tweet mostPopularTweet = finalResult.getMostPopularTweet();
+						if ((mostPopularTweet == null) || (mostPopularTweet.getStatus().getRetweetCount() < tweet.getStatus().getRetweetCount())) {
+							finalResult.setMostPopularTweet(tweet);
 						}
 					}
 				}
-			} while (((query = result.nextQuery()) != null) && (statusList.size() <= maxTweets));
+			} while (((query = result.nextQuery()) != null) && (finalTweetList.size() <= maxTweets));
 		} catch (final TwitterException te) {
 			te.printStackTrace();
 			System.out.println("Failed to search tweets: " + te.getMessage());
 		}
 
-		for (final Status tweet : finalResult.getTweetList()) {
+		for (final Tweet tweet : finalTweetList) {
 			final int sentimentInt = this.stanfordNLPService.findSentiment(tweet.getText());
 			final SentimentLevel sentiment = SentimentLevel.getByInt(sentimentInt);
 			if (!allSentimentsLevels.containsKey(sentiment)) {
@@ -84,18 +97,20 @@ public class TwitterService {
 			sentimentSum += 1;
 			allSentimentsLevels.put(sentiment, sentimentSum);
 		}
-
+		finalResult.setTweetList( finalTweetList );
 		finalResult.setAllSentimentsLevels(allSentimentsLevels);
 
 		return finalResult;
 	}
 
-	private static boolean checkIfAlreadyExists(final List<Status> tweetList, final String text) {
-		for (final Status status : tweetList) {
-			if (status.getRetweetedStatus().getText().equals(text)) {
-				return true;
+	private static boolean checkIfAlreadyExists(final List<Tweet> tweetList, final String text) {
+		boolean result = false;
+		for (final Tweet status : tweetList) {
+			if (status.getText().equals(text)) {
+				result = true;
+				break;
 			}
 		}
-		return false;
+		return result;
 	}
 }
