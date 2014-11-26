@@ -1,24 +1,15 @@
 <html>
 	<head>
-		<title>Hello World</title>
-
+		<title>Lumaro Twitter Feel</title>
 	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-	    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	    <script type="text/javascript">
 
 	      google.load('visualization', '1.0', {'packages':['corechart']});
-
-	      // Set a callback to run when the Google Visualization API is loaded.
 	      google.setOnLoadCallback(drawChart);
-
-	      // Callback that creates and populates a data table,
-	      // instantiates the pie chart, passes in the data and
-	      // draws it.
 	      function drawChart() {
-
-	        // Create the data table.
 	        var data = new google.visualization.DataTable();
 	        data.addColumn('string', 'Topping');
 	        data.addColumn('number', 'Slices');
@@ -27,13 +18,9 @@
 	         ${chartData}
 	        ]
 	        );
-
-	        // Set chart options
-	        var options = {'title':'LUMARO TwitterFeel Analysis',
-	                       'width':800,
-	                       'height':600};
-
-	        // Instantiate and draw our chart, passing in some options.
+	        var options = {'title':'Twitter Feel Analysis',
+	                       'width':650,
+	                       'height':650};
 	        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
 	        chart.draw(data, options);
 	      }
@@ -47,9 +34,8 @@
 				</div>
 				<div id="navbar" class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-						<li class="active"><a href="#">Home</a></li>
-						<li><a href="#about">About</a></li>
-						<li><a href="#contact">Contact</a></li>
+						<li class="active"><a href="/lumaro-twitter-feel/home">Home</a></li>
+						<li><a href="/lumaro-twitter-feel/about">About</a></li>
 					</ul>
 				</div>
 			</div>
@@ -57,18 +43,31 @@
 
 		<div class="container">
 			<br/>
-			<h2>${average}</h2>
 			<br/>
-			<h2>${oldestText}</h2>
 			<br/>
-			<h2>${oldestOwner}</h2>
-			<br/>
-			<h2>${newestText}</h2>
-			<br/>
-			<h2>${newestOwner}</h2>
-			<br/>
-			<h2>${chartData}</h2>
-			<div id="chart_div"></div>
+			<div class="row">
+				<div class="col-md-6">
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<h4>Oldest Tweet:</h4>
+					<span>${oldestText}</span>
+					<br/>
+					<h4>Oldest Tweet By:</h4>
+					<span>${oldestOwner}</span>
+					<br/>
+					<hr>
+					<h4>Newest Tweet:</h4>
+					<span>${newestText}</span>
+					<br/>
+					<h4>Newest Tweet By:</h4>
+					<span>${newestOwner}</span>
+				</div>
+				<div class="col-md-6">
+					<div id="chart_div"></div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
