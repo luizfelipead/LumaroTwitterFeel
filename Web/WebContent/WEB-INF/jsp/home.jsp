@@ -26,11 +26,36 @@
 			<br/>
 			<h2>${welcome}</h2>
 			<br/>
-			<span>To begin your search, text your topic in the text field below:</span>
-			<form method="get" action="/lumaro-twitter-feel/search">
-				<input name="topic" type="text"/>
-				<input type="submit" class="btn btn-default"/>
-			</form>
+			<span>To begin your search, fill the form below:</span>
+			</br>
+			</br>
+			<div class="row">
+				<form method="get" action="/lumaro-twitter-feel/search">
+					<div class="col-md-4">
+						<label>Text:</label>
+						</br>
+						<input name="topic" type="text"/>
+						</br>
+						</br>
+						<label>Tweets Quantity:</label>     <span class="badge">Numbers Only</span>
+						</br>
+						<input name="tweetQuantity" type="text"/>
+					</div>
+					<div class="col-md-4">
+						<label>Language:</label>     
+						<select name="language">
+							<option value="en">en</option>
+						</select>
+						</br>
+						</br>
+						<label>Consider repeated tweets?</label>     
+						<input type="checkbox" name="addRepeated">
+						</br>
+						</br>
+						<input type="submit" class="btn btn-sm btn-success"/>
+					</div>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>

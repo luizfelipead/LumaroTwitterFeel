@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import edu.stanford.nlp.trees.Tree;
+
 public class Result {
 	private Tweet oldestTweet;
 	private Tweet newestTweet;
 	private Tweet mostPopularTweet;
+	private SentimentLevel oldestTweetSentiment;
+	private SentimentLevel newestTweetSentiment;
+	private Tree oldestTweetTree;
+	private Tree newestTweetTree;
 	private List<Tweet> tweetList;
 	private Map<SentimentLevel, Integer> allSentimentsLevels;
 
@@ -49,11 +55,43 @@ public class Result {
 	}
 
 	public Map<SentimentLevel, Integer> getAllSentimentsLevels() {
-	    return allSentimentsLevels;
+		return this.allSentimentsLevels;
+	}
+
+	public void setAllSentimentsLevels(final Map<SentimentLevel, Integer> allSentimentsLevels) {
+		this.allSentimentsLevels = allSentimentsLevels;
+	}
+
+	public SentimentLevel getOldestTweetSentiment() {
+		return this.oldestTweetSentiment;
+	}
+
+	public void setOldestTweetSentiment(final SentimentLevel oldestTweetSentiment) {
+		this.oldestTweetSentiment = oldestTweetSentiment;
+	}
+
+	public SentimentLevel getNewestTweetSentiment() {
+		return this.newestTweetSentiment;
+	}
+
+	public void setNewestTweetSentiment(final SentimentLevel newestTweetSentiment) {
+		this.newestTweetSentiment = newestTweetSentiment;
+	}
+
+	public Tree getOldestTweetTree() {
+	    return oldestTweetTree;
     }
 
-	public void setAllSentimentsLevels(Map<SentimentLevel, Integer> allSentimentsLevels) {
-	    this.allSentimentsLevels = allSentimentsLevels;
+	public void setOldestTweetTree(Tree oldestTweetTree) {
+	    this.oldestTweetTree = oldestTweetTree;
+    }
+
+	public Tree getNewestTweetTree() {
+	    return newestTweetTree;
+    }
+
+	public void setNewestTweetTree(Tree newestTweetTree) {
+	    this.newestTweetTree = newestTweetTree;
     }
 
 }

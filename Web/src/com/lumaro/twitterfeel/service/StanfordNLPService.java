@@ -11,6 +11,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.util.Pair;
 
 @Service
 public class StanfordNLPService {
@@ -22,8 +23,11 @@ public class StanfordNLPService {
 		this.pipeline = new StanfordCoreNLP("tweetfeelNLP.properties");
 	}
 
-	public int findSentiment(final String tweet) {
+	public Pair<Integer, Tree> findSentiment(final String tweet) {
+
 		int mainSentiment = 0;
+		Tree mainTree = null;
+		System.out.println("**********");
 		if ((tweet != null) && (tweet.length() > 0)) {
 			int longest = 0;
 			final Annotation annotation = this.pipeline.process(tweet);
@@ -31,15 +35,16 @@ public class StanfordNLPService {
 				final Tree tree = sentence.get(SentimentCoreAnnotations.AnnotatedTree.class);
 				final int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
 				final String partText = sentence.toString();
-				System.out.println(partText);
 				if (partText.length() > longest) {
 					mainSentiment = sentiment;
+					mainTree = tree;
 					longest = partText.length();
 				}
 
 			}
 		}
-		return mainSentiment;
+
+		return new Pair<Integer, Tree>(mainSentiment, mainTree);
 	}
 
 }

@@ -4,19 +4,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+
 import com.lumaro.twitterfeel.model.Result;
 import com.lumaro.twitterfeel.model.SentimentLevel;
 import com.lumaro.twitterfeel.model.Tweet;
 import com.lumaro.twitterfeel.utils.TextUtils;
+
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.Pair;
 
 @Service
 public class TwitterService {
@@ -48,11 +55,11 @@ public class TwitterService {
 			do {
 				result = this.twitter.search(query);
 
-				List<Tweet> tweetList = new ArrayList<Tweet>();
-				for ( Status status : result.getTweets() ) {
-					Status retweetedStatus = status.getRetweetedStatus();
-					if( retweetedStatus != null ) {
-						tweetList.add( new Tweet( retweetedStatus ) );
+				final List<Tweet> tweetList = new ArrayList<Tweet>();
+				for (final Status status : result.getTweets()) {
+					final Status retweetedStatus = status.getRetweetedStatus();
+					if (retweetedStatus != null) {
+						tweetList.add(new Tweet(retweetedStatus));
 					}
 				}
 
@@ -64,17 +71,17 @@ public class TwitterService {
 					if (!alreadyExists) {
 						finalTweetList.add(tweet);
 
-						Tweet oldestTweet = finalResult.getOldestTweet();
+						final Tweet oldestTweet = finalResult.getOldestTweet();
 						if ((oldestTweet == null) || oldestTweet.getStatus().getCreatedAt().after(tweet.getStatus().getCreatedAt())) {
 							finalResult.setOldestTweet(tweet);
 						}
 
-						Tweet newestTweet = finalResult.getNewestTweet();
+						final Tweet newestTweet = finalResult.getNewestTweet();
 						if ((newestTweet == null) || newestTweet.getStatus().getCreatedAt().before(tweet.getStatus().getCreatedAt())) {
 							finalResult.setNewestTweet(tweet);
 						}
 
-						Tweet mostPopularTweet = finalResult.getMostPopularTweet();
+						final Tweet mostPopularTweet = finalResult.getMostPopularTweet();
 						if ((mostPopularTweet == null) || (mostPopularTweet.getStatus().getRetweetCount() < tweet.getStatus().getRetweetCount())) {
 							finalResult.setMostPopularTweet(tweet);
 						}
@@ -87,8 +94,17 @@ public class TwitterService {
 		}
 
 		for (final Tweet tweet : finalTweetList) {
-			final int sentimentInt = this.stanfordNLPService.findSentiment(tweet.getText());
-			final SentimentLevel sentiment = SentimentLevel.getByInt(sentimentInt);
+			final Pair<Integer, Tree> pair = this.stanfordNLPService.findSentiment(tweet.getText());
+			final SentimentLevel sentiment = SentimentLevel.getByInt(pair.first());
+
+			if (tweet.equals(finalResult.getOldestTweet())) {
+				finalResult.setOldestTweetSentiment(sentiment);
+				finalResult.setOldestTweetTree(pair.second());
+			} else if (tweet.equals(finalResult.getNewestTweet())) {
+				finalResult.setNewestTweetSentiment(sentiment);
+				finalResult.setNewestTweetTree(pair.second());
+			}
+
 			if (!allSentimentsLevels.containsKey(sentiment)) {
 				allSentimentsLevels.put(sentiment, 0);
 			}
@@ -97,7 +113,7 @@ public class TwitterService {
 			sentimentSum += 1;
 			allSentimentsLevels.put(sentiment, sentimentSum);
 		}
-		finalResult.setTweetList( finalTweetList );
+		finalResult.setTweetList(finalTweetList);
 		finalResult.setAllSentimentsLevels(allSentimentsLevels);
 
 		return finalResult;
