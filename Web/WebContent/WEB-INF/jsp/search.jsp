@@ -107,6 +107,22 @@
 					<br/>
 					<h4>Tree:</h4>
 					<span>${newestTree}</span>
+					<br/>
+					<br/>
+					<h4>Total Sentiment Values Statistics:</h4>
+					<span>Minimum Value: ${min}</span>
+					<br/>
+					<span>Max Value: ${max}</span>
+					<br/>
+					<span>Mean: ${mean}</span>
+					<br/>
+					<span>Geometric Mean: ${geometricMean}</span>
+					<br/>
+					<span>Standard Deviation: ${standardDeviation}</span>
+					<br/>
+					<span>Variance: ${variance}</span>
+					<br/>
+					<span>Second Moment: ${secondMoment}</span>
 				</div>
 				<div class="col-md-6">
 					<div id="chart_div"></div>
