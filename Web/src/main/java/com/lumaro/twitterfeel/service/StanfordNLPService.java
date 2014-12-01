@@ -1,9 +1,7 @@
 package com.lumaro.twitterfeel.service;
 
 import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Service;
-
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -18,7 +16,8 @@ public class StanfordNLPService {
 
 	private StanfordCoreNLP pipeline;
 
-	protected void init() {
+	@PostConstruct
+	private void postConstruct() {
 		this.pipeline = new StanfordCoreNLP("tweetfeelNLP.properties");
 	}
 

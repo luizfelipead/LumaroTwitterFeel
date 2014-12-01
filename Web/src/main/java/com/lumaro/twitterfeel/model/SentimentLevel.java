@@ -1,5 +1,6 @@
 package com.lumaro.twitterfeel.model;
 
+
 public enum SentimentLevel {
 
 	LEVEL_0("Very negative"), LEVEL_1("Negative"), LEVEL_2("Neutral"), LEVEL_3("Positive"), LEVEL_4("Very Positive");

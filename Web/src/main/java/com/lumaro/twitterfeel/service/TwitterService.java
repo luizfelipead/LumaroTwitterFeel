@@ -1,27 +1,26 @@
 package com.lumaro.twitterfeel.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-
+import com.google.gson.GsonBuilder;
 import com.lumaro.twitterfeel.model.Result;
 import com.lumaro.twitterfeel.model.SentimentLevel;
 import com.lumaro.twitterfeel.model.Tweet;
+import com.lumaro.twitterfeel.repository.TwitterRepository;
 import com.lumaro.twitterfeel.utils.TextUtils;
-
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.Pair;
 
@@ -36,6 +35,9 @@ public class TwitterService {
 	@Autowired
 	private TextUtils textUtils;
 
+	@Autowired
+	private TwitterRepository twitterRepository;
+
 	@PostConstruct
 	protected void postConstruct() {
 		this.twitter = new TwitterFactory().getInstance();
@@ -43,8 +45,7 @@ public class TwitterService {
 
 	public Result runTweetAnalysis(final String topic, final int maxTweets, final String language, final boolean addRepeated) {
 
-		stanfordNLPService.init();
-		final Result finalResult = new Result();
+		final Result finalResult = new Result( topic, maxTweets, language, addRepeated);
 		final List<Tweet> finalTweetList = new ArrayList<Tweet>();
 		final Map<SentimentLevel, Integer> allSentimentsLevels = new HashMap<SentimentLevel, Integer>();
 		final List<Integer> allSentimentsValues = new ArrayList<Integer>();
@@ -74,22 +75,23 @@ public class TwitterService {
 						finalTweetList.add(tweet);
 
 						final Tweet oldestTweet = finalResult.getOldestTweet();
-						if ((oldestTweet == null) || oldestTweet.getStatus().getCreatedAt().after(tweet.getStatus().getCreatedAt())) {
+						if ((oldestTweet == null) || oldestTweet.getCreatedAt().after(tweet.getCreatedAt())) {
 							finalResult.setOldestTweet(tweet);
 						}
 
 						final Tweet newestTweet = finalResult.getNewestTweet();
-						if ((newestTweet == null) || newestTweet.getStatus().getCreatedAt().before(tweet.getStatus().getCreatedAt())) {
+						if ((newestTweet == null) || newestTweet.getCreatedAt().before(tweet.getCreatedAt())) {
 							finalResult.setNewestTweet(tweet);
 						}
 
 						final Tweet mostPopularTweet = finalResult.getMostPopularTweet();
-						if ((mostPopularTweet == null) || (mostPopularTweet.getStatus().getRetweetCount() < tweet.getStatus().getRetweetCount())) {
+						if ((mostPopularTweet == null) || (mostPopularTweet.getRetweetCount() < tweet.getRetweetCount())) {
 							finalResult.setMostPopularTweet(tweet);
 						}
 					}
 				}
 			} while (((query = result.nextQuery()) != null) && (finalTweetList.size() <= maxTweets));
+
 		} catch (final TwitterException te) {
 			te.printStackTrace();
 			System.out.println("Failed to search tweets: " + te.getMessage());
@@ -120,6 +122,8 @@ public class TwitterService {
 		finalResult.setAllSentimentsLevels(allSentimentsLevels);
 		finalResult.setAllSentimentsValues(allSentimentsValues);
 
+		twitterRepository.save( topic, finalResult );
+
 		return finalResult;
 	}
 
@@ -132,5 +136,21 @@ public class TwitterService {
 			}
 		}
 		return result;
+	}
+
+	public Result fetchFromFile( MultipartFile file ) {
+
+		Result result = null;
+
+		if (!file.isEmpty()) {
+			try {
+				result = new GsonBuilder().create().fromJson( new String(file.getBytes()) , Result.class );
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+		}
+
+		return result;
+
 	}
 }

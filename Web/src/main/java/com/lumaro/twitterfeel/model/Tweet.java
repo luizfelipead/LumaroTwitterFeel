@@ -1,16 +1,17 @@
 package com.lumaro.twitterfeel.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Date;
 import twitter4j.Status;
-import twitter4j.TweetEntity;
 
-public class Tweet  {
+public class Tweet implements Serializable  {
 	
-	private Status status;
+	private static final long serialVersionUID = -6294853371864520473L;
+	private Date createdAt;
 	private String text;
-	
+	private String userName;
+	private Integer retweetCount;
+
 	public Tweet() {
 		super();
 	}
@@ -18,35 +19,45 @@ public class Tweet  {
 	public Tweet( Status status ) {
 
 		this();
-		this.status = status;
-		this.text = this.status.getText();
-		
-//		List<TweetEntity> entities = new ArrayList<TweetEntity>();
-//		entities.addAll( Arrays.asList( this.status.getExtendedMediaEntities() ) );
-//		entities.addAll( Arrays.asList( this.status.getHashtagEntities() ) );
-//		entities.addAll( Arrays.asList( this.status.getMediaEntities() ) );
-//		entities.addAll( Arrays.asList( this.status.getSymbolEntities() ) );
-//		entities.addAll( Arrays.asList( this.status.getURLEntities() ) );
-//		entities.addAll( Arrays.asList( this.status.getUserMentionEntities() ) );
-//		
-//		System.out.println("############################ ENTITIES FOR TWEET ["+this.text+"]");
-//		for ( TweetEntity tweetEntity : entities ) {
-//			System.out.println(tweetEntity.getText());
-//			this.text = this.text.replace( tweetEntity.getText(), "" );
-//		}
-//		System.out.println("############################ END");
+		this.createdAt = status.getCreatedAt();
+		this.text = status.getText();
+		this.userName = status.getUser().getScreenName();
+		this.retweetCount = status.getRetweetCount();
+	}
+	
+	public Integer getRetweetCount() {
+	
+		return retweetCount;
 	}
 
-	public Status getStatus() {
 	
-		return status;
+	public void setRetweetCount( Integer retweetCount ) {
+	
+		this.retweetCount = retweetCount;
 	}
 	
-	public void setStatus( Status status ) {
+	public String getUserName() {
 	
-		this.status = status;
+		return userName;
 	}
+
 	
+	public void setUserName( String userName ) {
+	
+		this.userName = userName;
+	}
+
+	public Date getCreatedAt() {
+	
+		return createdAt;
+	}
+
+	
+	public void setCreatedAt( Date createdAt ) {
+	
+		this.createdAt = createdAt;
+	}
+
 	public String getText() {
 	
 		return text;

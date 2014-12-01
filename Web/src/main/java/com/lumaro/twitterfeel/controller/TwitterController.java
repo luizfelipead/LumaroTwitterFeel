@@ -2,19 +2,18 @@ package com.lumaro.twitterfeel.controller;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import com.lumaro.twitterfeel.model.Result;
 import com.lumaro.twitterfeel.model.SentimentLevel;
 import com.lumaro.twitterfeel.model.StatisticsSummary;
 import com.lumaro.twitterfeel.service.StatisticsService;
 import com.lumaro.twitterfeel.service.TwitterService;
-
 import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.trees.Tree;
 
@@ -24,7 +23,7 @@ public class TwitterController {
 
 	@Autowired
 	protected TwitterService twitterService;
-	
+
 	@Autowired
 	protected StatisticsService statisticsService;
 
@@ -35,19 +34,34 @@ public class TwitterController {
 		return "home";
 	}
 
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public String upload(final ModelMap model, @RequestParam(value = "file") MultipartFile file) {
+		
+		final Result result = this.twitterService.fetchFromFile( file );
+		fillModel( model, result );
+
+		return "search";
+	}
+
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String twitter(final ModelMap model, final String topic, final Integer tweetQuantity, final String language, Boolean addRepeated) {
 
 		addRepeated = addRepeated == null ? false : addRepeated;
-
-		model.addAttribute("topic", topic);
-		model.addAttribute("tweetQuantity", tweetQuantity);
-		model.addAttribute("language", language);
-		model.addAttribute("addRepeated", addRepeated ? "Yes" : "No");
-
 		final Result result = this.twitterService.runTweetAnalysis(topic, tweetQuantity, language, addRepeated);
+		fillModel( model, result );
+
+		return "search";
+	}
+
+	private void fillModel( ModelMap model, Result result ) {
+
 		final StatisticsSummary statisticsSummary = statisticsService.teste(result);
-		
+
+		model.addAttribute("topic", result.getTopic());
+		model.addAttribute("tweetQuantity", result.getMaxTweets());
+		model.addAttribute("language", result.getLanguage());
+		model.addAttribute("addRepeated", result.isAddRepeated() ? "Yes" : "No");
+
 		model.addAttribute("mean", statisticsSummary.getMean());
 		model.addAttribute("min", statisticsSummary.getMin());
 		model.addAttribute("max", statisticsSummary.getMax());
@@ -55,9 +69,9 @@ public class TwitterController {
 		model.addAttribute("variance", statisticsSummary.getVariance());
 		model.addAttribute("secondMoment", statisticsSummary.getSecondMoment());
 		model.addAttribute("geometricMean", statisticsSummary.getGeometricMean());
-		
-		model.addAttribute("oldestText", result.getOldestTweet().getText() + " at " + result.getOldestTweet().getStatus().getCreatedAt());
-		model.addAttribute("oldestOwner", result.getOldestTweet().getStatus().getUser().getScreenName());
+
+		model.addAttribute("oldestText", result.getOldestTweet().getText() + " at " + result.getOldestTweet().getCreatedAt());
+		model.addAttribute("oldestOwner", result.getOldestTweet().getUserName());
 		model.addAttribute("oldestTweetSentiment", result.getOldestTweetSentiment().getCanonicalName());
 
 		// final String oldestTreeHTML = "";
@@ -66,8 +80,8 @@ public class TwitterController {
 		// System.out.println("FINAL " + oldestTreeHTML + " / " + handleTree);
 		// model.addAttribute("oldestTree", handleTree);
 		model.addAttribute("oldestTree", result.getOldestTweetTree());
-		model.addAttribute("newestText", result.getNewestTweet().getText() + " at " + result.getNewestTweet().getStatus().getCreatedAt());
-		model.addAttribute("newestOwner", result.getNewestTweet().getStatus().getUser().getScreenName());
+		model.addAttribute("newestText", result.getNewestTweet().getText() + " at " + result.getNewestTweet().getCreatedAt());
+		model.addAttribute("newestOwner", result.getNewestTweet().getUserName());
 		model.addAttribute("newe" + "stTweetSentiment", result.getNewestTweetSentiment().getCanonicalName());
 		model.addAttribute("newestTree", result.getOldestTweetTree());
 		// this.handleTree(result.getOldestTweetTree());
@@ -85,8 +99,6 @@ public class TwitterController {
 		}
 		chartData = chartData.substring(0, chartData.length() - 1);
 		model.addAttribute("chartData", chartData);
-
-		return "search";
 	}
 
 	private String handleTree(String html, final Tree tree) {

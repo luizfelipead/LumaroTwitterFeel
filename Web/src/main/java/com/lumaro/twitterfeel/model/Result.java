@@ -1,26 +1,86 @@
 package com.lumaro.twitterfeel.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import edu.stanford.nlp.trees.Tree;
 
-public class Result {
+public class Result implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3511295040551395147L;
 	private Tweet oldestTweet;
 	private Tweet newestTweet;
 	private Tweet mostPopularTweet;
 	private SentimentLevel oldestTweetSentiment;
 	private SentimentLevel newestTweetSentiment;
-	private Tree oldestTweetTree;
-	private Tree newestTweetTree;
+	private String oldestTweetTree;
+	private String newestTweetTree;
 	private List<Tweet> tweetList;
 	private Map<SentimentLevel, Integer> allSentimentsLevels;
 	private List<Integer> allSentimentsValues;
-	
-	public Result() {
+	private String topic;
+	private Integer maxTweets;
+	private String language;
+	private Boolean addRepeated;
+
+	public Result(String topic , int maxTweets , String language , boolean addRepeated ) {
 		super();
+		this.topic = topic;
+		this.maxTweets = maxTweets;
+		this.language = language;
+		this.addRepeated = addRepeated;
 		this.tweetList = new ArrayList<Tweet>();
+	}
+
+	public String getTopic() {
+
+		return topic;
+	}
+
+
+	public void setTopic( String topic ) {
+
+		this.topic = topic;
+	}
+
+
+	public int getMaxTweets() {
+
+		return maxTweets;
+	}
+
+
+	public void setMaxTweets( int maxTweets ) {
+
+		this.maxTweets = maxTweets;
+	}
+
+
+	public String getLanguage() {
+
+		return language;
+	}
+
+
+	public void setLanguage( String language ) {
+
+		this.language = language;
+	}
+
+
+	public boolean isAddRepeated() {
+
+		return addRepeated;
+	}
+
+
+	public void setAddRepeated( boolean addRepeated ) {
+
+		this.addRepeated = addRepeated;
 	}
 
 	public List<Tweet> getTweetList() {
@@ -79,21 +139,21 @@ public class Result {
 		this.newestTweetSentiment = newestTweetSentiment;
 	}
 
-	public Tree getOldestTweetTree() {
-	    return oldestTweetTree;
-    }
+	public String getOldestTweetTree() {
+		return oldestTweetTree;
+	}
 
 	public void setOldestTweetTree(Tree oldestTweetTree) {
-	    this.oldestTweetTree = oldestTweetTree;
-    }
+		this.oldestTweetTree = oldestTweetTree.toString();
+	}
 
-	public Tree getNewestTweetTree() {
-	    return newestTweetTree;
-    }
+	public String getNewestTweetTree() {
+		return newestTweetTree;
+	}
 
 	public void setNewestTweetTree(Tree newestTweetTree) {
-	    this.newestTweetTree = newestTweetTree;
-    }
+		this.newestTweetTree = newestTweetTree.toString();
+	}
 
 	public List<Integer> getAllSentimentsValues() {
 		return allSentimentsValues;

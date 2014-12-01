@@ -56,6 +56,21 @@
 					</div>
 				</form>
 			</div>
+			<hr>
+			<h3>Or upload a file</h3>
+			<hr>
+			<div class="row">
+				<form method="POST" enctype="multipart/form-data" action="/lumaro-twitter-feel/upload">
+					<div class="col-md-4">
+						<label>File to upload:</label> 
+						</br>
+						<input type="file" name="file"/>
+					</div>
+					<div class="col-md-4">
+						<input type="submit" class="btn btn-sm btn-success"/>
+					</div>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>
